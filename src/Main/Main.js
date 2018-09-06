@@ -42,15 +42,23 @@ class Main extends Component {
 
     try {
       const data = convert2Woo(product);
-      data.regular_price += parseFloat(appState.profitMargin);
-      data.sale_price += parseFloat(appState.profitMargin);
+      const profitMargin = parseFloat(appState.profitMargin);
 
-      console.log(data);
-      const res = await client.post('products', data);
+      const newData = {
+        ...data,
+        regular_price: (parseFloat(data.regular_price) + profitMargin).toFixed(2),
+        sale_price: (parseFloat(data.sale_price) + profitMargin).toFixed(2)
+      };
+
+      console.log(newData);
+
+      const res = await client.post('products', newData);
       if (res.message) {
         alert(res.message);
       }
+
       console.log(res);
+
     } catch (e) {
       console.error(e)
     }
