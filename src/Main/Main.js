@@ -35,13 +35,16 @@ class Main extends Component {
   };
 
   handleImport = async (product) => {
-    const { client } = this.props;
+    const { client, appState } = this.props;
     this.setState({
       loading: true,
     });
 
     try {
       const data = convert2Woo(product);
+      data.regular_price += parseFloat(appState.profitMargin);
+      data.sale_price += parseFloat(appState.profitMargin);
+
       console.log(data);
       const res = await client.post('products', data);
       if (res.message) {

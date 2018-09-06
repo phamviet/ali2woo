@@ -1,4 +1,4 @@
-export function convert2Woo({ productId, productTitle, productUrl, originalPrice, discountPrice, imageUrl, thumbnailUrls, availQuantity, attributes, ...product }) {
+export function convert2Woo({ productId, productTitle, productUrl, originalPrice, discountPrice, imageUrl, thumbnailUrls, availQuantity, attributes }) {
   const woo = {
     name: productTitle,
     sku: productId,
@@ -48,7 +48,6 @@ export function convert2Woo({ productId, productTitle, productUrl, originalPrice
 
 export function calculatePrice(originalPrice) {
   const paypalFee = 0.3 + (2.9 * originalPrice) / 100;
-  const profitMargin = 2.99;
 
-  return originalPrice + paypalFee + profitMargin
+  return originalPrice + paypalFee
 }
