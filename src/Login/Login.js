@@ -19,9 +19,9 @@ class Login extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
 
-    const { consumerKey, consumerSecret, storeUrl, apiUrl } = this.state;
-    if (consumerKey && consumerSecret && storeUrl && apiUrl) {
-      this.props.onLoggedIn({ consumerKey, consumerSecret, storeUrl, apiUrl });
+    const { consumerKey, consumerSecret, storeUrl, apiUrl, profitMargin } = this.state;
+    if (consumerKey && consumerSecret && storeUrl && apiUrl && profitMargin) {
+      this.props.onLoggedIn(this.state);
     }
   };
 
