@@ -35,17 +35,12 @@ class App extends Component {
     this.init(appState)
   }
 
-  handleClose = () => {
-    this.setState({ authenticated: true })
-  }
-
   render() {
     const { authenticated, appState } = this.state;
     const dialogProps = {
       open: !authenticated,
       disableBackdropClick: true,
       disableEscapeKeyDown: true,
-      onClose: this.handleClose,
     };
 
     return (

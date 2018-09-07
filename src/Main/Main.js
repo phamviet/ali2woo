@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Form from './Form'
 import ProductList from '../common/ProductList'
-import { convert2Woo } from '../common/utilities'
+import { convert2Woo, calculateProfitablePrice } from '../common/utilities'
 
 import './Main.css'
 
@@ -13,6 +13,11 @@ class Main extends Component {
     product: null,
   }
 
+  componentDidMount() {
+    const { profitMargin, maxProfitMargin } = this.props.appState;
+    const a = calculateProfitablePrice('8.7', profitMargin, maxProfitMargin)
+    console.log(a);
+  }
   handleSearch = async (event) => {
     event.preventDefault();
     this.setState({
@@ -36,18 +41,17 @@ class Main extends Component {
 
   handleImport = async (product) => {
     const { client, appState } = this.props;
+    const { profitMargin, maxProfitMargin } = appState;
     this.setState({
       loading: true,
     });
 
     try {
       const data = convert2Woo(product);
-      const profitMargin = parseFloat(appState.profitMargin);
-
       const newData = {
         ...data,
-        regular_price: (parseFloat(data.regular_price) + profitMargin).toFixed(2),
-        sale_price: (parseFloat(data.sale_price) + profitMargin).toFixed(2)
+        regular_price: calculateProfitablePrice(data.regular_price, profitMargin, maxProfitMargin),
+        sale_price: calculateProfitablePrice(data.sale_price, profitMargin, maxProfitMargin),
       };
 
       console.log(newData);

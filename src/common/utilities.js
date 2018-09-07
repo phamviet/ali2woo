@@ -36,18 +36,38 @@ export function convert2Woo({ productId, productTitle, productUrl, originalPrice
   });*/
 
   if (originalPrice) {
-    woo.regular_price = calculatePrice(parseFloat(originalPrice)).toFixed(2);
+    woo.regular_price = calculatePrice(originalPrice);
+    woo.meta_data.push({
+      key: 'original_regular_price',
+      value: woo.regular_price,
+    });
   }
 
   if (discountPrice) {
-    woo.sale_price = calculatePrice(parseFloat(discountPrice)).toFixed(2);
+    woo.sale_price = calculatePrice(discountPrice);
+    woo.meta_data.push({
+      key: 'original_sale_price',
+      value: woo.sale_price,
+    });
   }
 
   return woo;
 }
 
 export function calculatePrice(originalPrice) {
-  const paypalFee = 0.3 + (2.9 * originalPrice) / 100;
+  const originalPriceNumber = parseFloat(originalPrice);
+  const paypalFee = 0.3 + (2.9 * originalPriceNumber) / 100;
 
-  return originalPrice + paypalFee
+  return (originalPriceNumber + paypalFee).toFixed(2)
+}
+
+export function calculateProfitablePrice(originalPrice, profitMargin, maxProfitMargin) {
+  const profitMarginNumber = parseFloat(profitMargin);
+  const maxProfitMarginNumber = parseFloat(maxProfitMargin);
+  const originalPriceNumber = parseFloat(originalPrice);
+
+  const profitablePrice = ((profitMarginNumber * originalPriceNumber) / 100);
+  const profitPrice = profitablePrice < maxProfitMarginNumber ? profitablePrice : maxProfitMarginNumber
+
+  return (profitPrice + originalPriceNumber).toFixed(2)
 }
