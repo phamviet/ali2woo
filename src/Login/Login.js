@@ -71,6 +71,7 @@ class LoginDialog extends Component {
             <TextField
               margin="normal"
               label="Consumer Secret"
+              type="password"
               fullWidth
               required
               value={consumerSecret}
