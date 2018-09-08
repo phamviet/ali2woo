@@ -21,6 +21,12 @@ class LoginDialog extends Component {
     maxProfitMargin: '5',
   }
 
+  componentDidMount() {
+    this.setState({
+      ...this.props.appState
+    })
+  }
+
   handleSubmit = (event) => {
     const { consumerKey, consumerSecret, storeUrl, apiUrl, profitMargin } = this.state;
     if (consumerKey && consumerSecret && storeUrl && apiUrl && profitMargin) {
@@ -38,7 +44,7 @@ class LoginDialog extends Component {
 
   render() {
     const { dialogProps, fullScreen } = this.props;
-    const { storeUrl, apiUrl, profitMargin, maxProfitMargin } = this.state;
+    const { consumerKey, consumerSecret, storeUrl, apiUrl, profitMargin, maxProfitMargin } = this.state;
 
     return (
       <Dialog
@@ -59,6 +65,7 @@ class LoginDialog extends Component {
               fullWidth
               required
               inputProps={{ required: true }}
+              value={consumerKey}
               onChange={this.handleChange('consumerKey')}
             />
             <TextField
@@ -66,6 +73,7 @@ class LoginDialog extends Component {
               label="Consumer Secret"
               fullWidth
               required
+              value={consumerSecret}
               onChange={this.handleChange('consumerSecret')}
             />
             <TextField

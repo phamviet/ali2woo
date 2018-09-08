@@ -25,14 +25,16 @@ class App extends Component {
   }
 
   init(appState) {
-    this.setState({ appState, authenticated: true });
+    this.setState({ appState });
     this.client = new WooCommerce(appState);
     this.ali = new AliExpress({ url: appState.apiUrl });
   }
 
   handleLoggedIn = (appState) => {
     localStorage.setItem('Ali2WooAppState', JSON.stringify(appState));
-    this.init(appState)
+    this.setState(() => ({ authenticated: true }), () => {
+      this.init(appState)
+    })
   }
 
   render() {
@@ -50,7 +52,7 @@ class App extends Component {
           <h1 className="App-title">Ali2Woo</h1>
         </header>
         {authenticated && <Main appState={appState} client={this.client} ali={this.ali} />}
-        <Login key={`login-modal-${authenticated ? 'no' : 'yes'}`} dialogProps={dialogProps} onLoggedIn={this.handleLoggedIn}/>
+        <Login appState={appState} key={`login-modal-${authenticated ? 'no' : 'yes'}`} dialogProps={dialogProps} onLoggedIn={this.handleLoggedIn}/>
       </div>
     );
   }
