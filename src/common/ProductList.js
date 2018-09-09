@@ -34,15 +34,16 @@ const ProductList = ({ products, ...other }) => {
   )
 }
 
-const Product = ({ product, onImportRequest, disabled = false, classes }) => {
-  const { productTitle, imageUrl, thumbnailUrls } = product
+const Product = ({ product, onImportRequest, calculateProfitablePrice, usd2Pound, disabled = false, classes }) => {
+  const { productTitle, originalPrice, discountPrice, imageUrl, thumbnailUrls } = product
   return (
     <Grid direction="row" wrap="nowrap" container>
       <Avatar classes={{ root: classes.square }} src={imageUrl} className={classNames(classes.avatar)} />
       <Grid container direction="column" wrap="nowrap" alignItems="flex-start">
         <Typography variant="title">{productTitle}</Typography>
-        <Typography>${product.originalPrice}</Typography>
-        <Typography variant="subheading"><strong>${product.discountPrice}</strong></Typography>
+        <Typography component="del">${originalPrice}</Typography>
+        <Typography variant="subheading"><strong>${discountPrice}</strong></Typography>
+        <Typography variant="subheading"><strong>Store Price ${calculateProfitablePrice(discountPrice)} - £{usd2Pound(calculateProfitablePrice(discountPrice))}</strong></Typography>
         <Grid container direction="row">
           {thumbnailUrls.map(src => <Avatar classes={{ root: classNames(classes.space, classes.square) }} src={src} key={src} />)}
         </Grid>

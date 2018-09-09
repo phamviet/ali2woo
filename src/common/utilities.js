@@ -35,39 +35,42 @@ export function convert2Woo({ productId, productTitle, productUrl, originalPrice
     position: 0,
   });*/
 
-  if (originalPrice) {
-    woo.regular_price = calculatePrice(originalPrice);
-    woo.meta_data.push({
-      key: 'original_regular_price',
-      value: woo.regular_price,
-    });
-  }
+  woo.regular_price = parseFloat(originalPrice);
+  woo.meta_data.push({
+    key: 'original_regular_price',
+    value: woo.regular_price,
+  });
 
-  if (discountPrice) {
-    woo.sale_price = calculatePrice(discountPrice);
-    woo.meta_data.push({
-      key: 'original_sale_price',
-      value: woo.sale_price,
-    });
-  }
+  woo.sale_price = parseFloat(discountPrice);
+  woo.meta_data.push({
+    key: 'original_sale_price',
+    value: woo.sale_price,
+  });
 
   return woo;
 }
 
-export function calculatePrice(originalPrice) {
+export function extraFees(originalPrice) {
   const originalPriceNumber = parseFloat(originalPrice);
-  const paypalFee = 0.3 + (2.9 * originalPriceNumber) / 100;
+  const payPalFee = 0.3 + (0.029 * originalPriceNumber);
 
-  return (originalPriceNumber + paypalFee).toFixed(2)
+  return (originalPriceNumber + payPalFee).toFixed(2)
 }
 
 export function calculateProfitablePrice(originalPrice, profitMargin, maxProfitMargin) {
   const profitMarginNumber = parseFloat(profitMargin);
   const maxProfitMarginNumber = parseFloat(maxProfitMargin);
-  const originalPriceNumber = parseFloat(originalPrice);
+  const originalPriceNumber = parseFloat(extraFees(originalPrice));
 
   const profitablePrice = ((profitMarginNumber * originalPriceNumber) / 100);
   const profitPrice = profitablePrice < maxProfitMarginNumber ? profitablePrice : maxProfitMarginNumber
 
   return (profitPrice + originalPriceNumber).toFixed(2)
+}
+
+export function usd2Pound(originalPrice, rate) {
+  const rateNumber = parseFloat(rate);
+  const originalPriceNumber = parseFloat(originalPrice);
+
+  return (rateNumber * originalPriceNumber).toFixed(2)
 }

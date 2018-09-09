@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Form from './Form'
 import ProductList from '../common/ProductList'
-import { convert2Woo, calculateProfitablePrice } from '../common/utilities'
+import { convert2Woo, calculateProfitablePrice, usd2Pound } from '../common/utilities'
 
 import './Main.css'
 
@@ -13,11 +13,47 @@ class Main extends Component {
     product: null,
   }
 
-  componentDidMount() {
+  calculateProfitablePrice() {
     const { profitMargin, maxProfitMargin } = this.props.appState;
-    const a = calculateProfitablePrice('8.7', profitMargin, maxProfitMargin)
-    console.log(a);
+    return function (originalPrice) {
+      return calculateProfitablePrice(originalPrice, profitMargin, maxProfitMargin);
+    }
   }
+
+  usd2Pound() {
+    const { GBPRate } = this.props.appState;
+    return function (originalPrice) {
+      return usd2Pound(originalPrice, GBPRate);
+    }
+  }
+
+  convertProduct(product) {
+    const { profitMargin, maxProfitMargin, GBPRate } = this.props.appState;
+    const { meta_data, regular_price, sale_price, ...data } = convert2Woo(product);
+    const regularPrice = calculateProfitablePrice(regular_price, profitMargin, maxProfitMargin);
+    const salePrice = calculateProfitablePrice(sale_price, profitMargin, maxProfitMargin);
+
+    const regularPriceAsPounds = (parseFloat(regularPrice) * parseFloat(GBPRate)).toFixed(2);
+    const salePriceAsPounds = (parseFloat(salePrice) * parseFloat(GBPRate)).toFixed(2);
+
+    return {
+      ...data,
+      regular_price: (Math.floor(parseFloat(regularPriceAsPounds)) + 0.99).toFixed(2),
+      sale_price: (Math.floor(parseFloat(salePriceAsPounds)) + 0.99).toFixed(2),
+      meta_data: [
+        ...meta_data,
+        {
+          key: 'store_regular_price',
+          value: regularPrice,
+        },
+        {
+          key: 'store_sale_price',
+          value: salePrice,
+        }
+      ]
+    };
+  }
+
   handleSearch = async (event) => {
     event.preventDefault();
     this.setState({
@@ -40,22 +76,15 @@ class Main extends Component {
   };
 
   handleImport = async (product) => {
-    const { client, appState } = this.props;
-    const { profitMargin, maxProfitMargin } = appState;
+    const { client } = this.props;
     this.setState({
       loading: true,
     });
 
+    const newData = this.convertProduct(product);
+    console.log(newData);
+
     try {
-      const data = convert2Woo(product);
-      const newData = {
-        ...data,
-        regular_price: calculateProfitablePrice(data.regular_price, profitMargin, maxProfitMargin),
-        sale_price: calculateProfitablePrice(data.sale_price, profitMargin, maxProfitMargin),
-      };
-
-      console.log(newData);
-
       const res = await client.post('products', newData);
       if (res.message) {
         alert(res.message);
@@ -83,8 +112,15 @@ class Main extends Component {
 
     return (
       <div className="Main">
-        <Form data={{ productUrl }} disabled={loading} onChange={this.updateProductUrl('productUrl')} onSubmit={this.handleSearch}/>
-        { product && <ProductList disabled={loading} products={[product]} onImportRequest={this.handleImport} />}
+        <Form data={{ productUrl }} disabled={loading} onChange={this.updateProductUrl('productUrl')}
+              onSubmit={this.handleSearch}/>
+        {product && <ProductList
+          disabled={loading}
+          products={[product]}
+          onImportRequest={this.handleImport}
+          calculateProfitablePrice={this.calculateProfitablePrice()}
+          usd2Pound={this.usd2Pound()}
+        />}
       </div>
     );
   }

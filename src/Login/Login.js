@@ -19,6 +19,7 @@ class LoginDialog extends Component {
     apiUrl: 'https://aliexpress-api.com/',
     profitMargin: '30',
     maxProfitMargin: '5',
+    GBPRate: '0.774220',
   }
 
   componentDidMount() {
@@ -44,7 +45,7 @@ class LoginDialog extends Component {
 
   render() {
     const { dialogProps, fullScreen } = this.props;
-    const { consumerKey, consumerSecret, storeUrl, apiUrl, profitMargin, maxProfitMargin } = this.state;
+    const { consumerKey, consumerSecret, storeUrl, apiUrl, profitMargin, maxProfitMargin, GBPRate } = this.state;
 
     return (
       <Dialog
@@ -116,6 +117,17 @@ class LoginDialog extends Component {
               onChange={this.handleChange('maxProfitMargin')}
               InputProps={{
                 startAdornment: <InputAdornment position="start">$</InputAdornment>,
+              }}
+            />
+            <TextField
+              margin="normal"
+              label="USD to GBP"
+              required
+              fullWidth
+              value={GBPRate}
+              onChange={this.handleChange('GBPRate')}
+              InputProps={{
+                startAdornment: <InputAdornment position="start">£</InputAdornment>,
               }}
             />
           </DialogContent>

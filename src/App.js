@@ -25,6 +25,7 @@ class App extends Component {
   }
 
   init(appState) {
+    // this.setState({ authenticated: true });
     this.setState({ appState });
     this.client = new WooCommerce(appState);
     this.ali = new AliExpress({ url: appState.apiUrl });
