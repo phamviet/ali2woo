@@ -13,6 +13,7 @@ class AliExpress {
         ...(options.headers || {}),
       },
       body: JSON.stringify(data),
+      credentials: 'include',
       ...options,
     }).then(reps => reps.json());
   }
