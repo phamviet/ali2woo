@@ -29,29 +29,28 @@ class Main extends Component {
 
   convertProduct(product) {
     const { profitMargin, maxProfitMargin, GBPRate } = this.props.appState;
-    const { meta_data, regular_price, sale_price, ...data } = convert2Woo(product);
+    const { meta_data = [], regular_price, sale_price, ...data } = convert2Woo(product);
     const regularPrice = calculateProfitablePrice(regular_price, profitMargin, maxProfitMargin);
-    const salePrice = calculateProfitablePrice(sale_price, profitMargin, maxProfitMargin);
 
     const regularPriceAsPounds = (parseFloat(regularPrice) * parseFloat(GBPRate)).toFixed(2);
-    const salePriceAsPounds = (parseFloat(salePrice) * parseFloat(GBPRate)).toFixed(2);
+    data.regular_price = (Math.floor(parseFloat(regularPriceAsPounds)) + 0.99).toFixed(2);
+    meta_data.push({
+      key: 'store_regular_price',
+      value: regularPrice,
+    });
 
-    return {
-      ...data,
-      regular_price: (Math.floor(parseFloat(regularPriceAsPounds)) + 0.99).toFixed(2),
-      sale_price: (Math.floor(parseFloat(salePriceAsPounds)) + 0.99).toFixed(2),
-      meta_data: [
-        ...meta_data,
-        {
-          key: 'store_regular_price',
-          value: regularPrice,
-        },
-        {
-          key: 'store_sale_price',
-          value: salePrice,
-        }
-      ]
-    };
+    if (sale_price) {
+      const salePrice = calculateProfitablePrice(sale_price, profitMargin, maxProfitMargin);
+      const salePriceAsPounds = (parseFloat(salePrice) * parseFloat(GBPRate)).toFixed(2);
+      data.sale_price = (Math.floor(parseFloat(salePriceAsPounds)) + 0.99).toFixed(2);
+      meta_data.push({
+        key: 'store_sale_price',
+        value: salePrice,
+      })
+    }
+
+    data.meta_data = meta_data;
+    return data;
   }
 
   handleSearch = async (event) => {

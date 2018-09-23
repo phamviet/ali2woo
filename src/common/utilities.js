@@ -41,11 +41,13 @@ export function convert2Woo({ productId, productTitle, productUrl, originalPrice
     value: woo.regular_price,
   });
 
-  woo.sale_price = parseFloat(discountPrice);
-  woo.meta_data.push({
-    key: 'original_sale_price',
-    value: woo.sale_price,
-  });
+  if (discountPrice) {
+    woo.sale_price = parseFloat(discountPrice);
+    woo.meta_data.push({
+      key: 'original_sale_price',
+      value: woo.sale_price,
+    });
+  }
 
   return woo;
 }
