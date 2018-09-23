@@ -42,8 +42,10 @@ const Product = ({ product, onImportRequest, calculateProfitablePrice, usd2Pound
       <Grid container direction="column" wrap="nowrap" alignItems="flex-start">
         <Typography variant="title">{productTitle}</Typography>
         <Typography component="del">${originalPrice}</Typography>
-        <Typography variant="subheading"><strong>${discountPrice}</strong></Typography>
-        <Typography variant="subheading"><strong>Store Price ${calculateProfitablePrice(discountPrice)} - £{usd2Pound(calculateProfitablePrice(discountPrice))}</strong></Typography>
+        {discountPrice && <Typography variant="subheading"><strong>${discountPrice}</strong></Typography>}
+        <Typography variant="subheading">
+          <strong>Store Price ${calculateProfitablePrice(discountPrice || originalPrice)} - £{usd2Pound(calculateProfitablePrice(discountPrice || originalPrice))}</strong>
+        </Typography>
         <Grid container direction="row">
           {thumbnailUrls.map(src => <Avatar classes={{ root: classNames(classes.space, classes.square) }} src={src} key={src} />)}
         </Grid>
